@@ -67,4 +67,5 @@
 
 (provide transaction-io/valid?
          transaction-io/calculate-hash
-         transaction-io/make)
+         transaction-io/make
+         (struct-out transaction-io))

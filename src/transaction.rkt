@@ -26,7 +26,7 @@
 
 (require "transaction-io.rkt")
 (require "utils.rkt")
-(require (only-in file/sha1 hex-string->bytes))
+(require (only-in openssl/sha1 hex-string->bytes))
 (require "wallet.rkt")
 (require crypto)
 (require crypto/all)
@@ -57,3 +57,54 @@
         (string->bytes/utf-8 (format "~a" (serialize from)))
         (string->bytes/utf-8 (format "~a" (serialize to)))
         (string->bytes/utf-8 (number->string value))))))))
+
+;; Create transaction outputs that contain the transaction’s value and leftover money
+(define (transaction/process trans)
+  (letrec ([inputs (transaction-inputs trans)]
+           [outputs (transaction-outputs trans)]
+           [value (transaction-value trans)]
+           [input-sum (foldr + 0 (map (lambda (i) (transaction-io-value i)) inputs))]
+           [leftover (- input-sum value)]
+           [new-outputs (list
+                         (transaction-io/make value (transaction-to trans))
+                         (transaction-io/make value (transaction-from trans)))])
+    (transaction
+     (transaction/sign (transaction-from trans)
+                       (transaction-to trans)
+                       (transaction-value trans))
+     (transaction-from trans)
+     (transaction-to trans)
+     value
+     inputs
+     (append new-outputs outputs))))
+
+;; Checks a transaction signature
+(define (transaction/valid-signature? trans)
+  (let ([pubkey (wallet-public-key (transaction-from trans))])
+    (digest/verify
+     (datum->pk-key (hex-string->bytes pubkey)
+                    'SubjectPublicKeyInfo)
+     'sha1
+     (bytes-append (string->bytes/utf-8 (format "~a" (serialize (transaction-from trans))))
+                   (string->bytes/utf-8 (format "~a" (serialize (transaction-to trans))))
+                   (string->bytes/utf-8 (number->string (transaction-value trans)))
+                   (hex-string->bytes (transaction-signature trans))))))
+
+;; Signature is valid
+(define (transaction/valid? trans)
+  (let ([sum-inputs
+         (foldr + 0 (map (lambda (t) (transaction-io-value t))
+                         (transaction-inputs t)))]
+        [sum-outputs
+         (foldr + 0 (map (lambda (t) (transaction-io-value t))
+                         (transaction-outputs t)))])
+    (and
+     (valid-transaction-signature? t)
+     (true-for-all? valid-transaction-io? (transaction- outputs t))
+     (>= sum-inputs sum-outputs))))
+
+(provide (all-from-out "transaction-io.rkt")
+         (struct-out transaction)
+         transaction/make
+         transaction/process
+         transaction/valid?)
