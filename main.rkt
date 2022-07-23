@@ -1,5 +1,7 @@
 #lang racket/base
 
+(require "src/wallet.rkt")
+
 (module+ test
   (require rackunit))
 
