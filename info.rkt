@@ -1,6 +1,6 @@
 #lang info
 (define collection "blacketch")
-(define deps '("base"))
+(define deps '("base" "crypto"))
 (define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
 (define scribblings '(("scribblings/blacketch.scrbl" ())))
 (define pkg-desc "Description Here")
