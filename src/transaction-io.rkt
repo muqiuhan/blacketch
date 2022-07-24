@@ -31,7 +31,7 @@
 #lang racket/base
 
 (require (only-in sha sha256))
-(require (only-in sha bytes->hex-string))
+(require (only-in openssl/sha1 bytes->hex-string))
 (require racket/serialize)
 
 (struct transaction-io

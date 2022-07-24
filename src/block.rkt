@@ -24,7 +24,12 @@
 
 #lang racket/base
 
-(define difficulty 2)
+(require (only-in openssl/sha1 hex-string->bytes))
+(require (only-in sha sha256))
+(require (only-in openssl/sha1 bytes->hex-string))
+(require racket/serialize)
+
+(define difficulty 3)
 (define target (bytes->hex-string (make-bytes difficulty 32)))
 
 (struct block
@@ -69,8 +74,3 @@
          block/mine
          block/valid?
          block/mined?)
-
-(require (only-in file/sha1 hex-string->bytes))
-(require (only-in sha sha256))
-(require (only-in sha bytes->hex-string))
-(require racket/serialize)
