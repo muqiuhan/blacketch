@@ -26,27 +26,31 @@
 
 (require racket/serialize)
 
-;; Return true if a predicate satisfies all members of the list
+; This procedure returns true if the predicate satisfies all members of the list
 (define (utils/true-for-all? pred list)
   (cond
     [(null? list) #t]
     [(pred (car list)) (utils/true-for-all? pred (cdr list))]
     [else #f]))
 
-;; Export a struct into a file
+; Export a struct to a file
 (define (utils/struct->file object file)
   (let ([out (open-output-file file #:exists 'replace)])
     (write (serialize object) out)
     (close-output-port out)))
 
-;; Return the struct by openning the file, reading its contents, and deserializing its contents.
+; Import struct contents from a file
 (define (utils/file->struct file)
   (letrec ([in (open-input-file file)]
            [result (read in)])
     (close-input-port in)
     (deserialize result)))
 
+(define (utils/file->contract file)
+  (with-handlers ([exn:fail? (lambda (exn) '())])
+    (read (open-input-file file))))
 
 (provide utils/true-for-all?
+         utils/struct->file
          utils/file->struct
-         utils/struct->file)
+         utils/file->contract)
