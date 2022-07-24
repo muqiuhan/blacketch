@@ -33,42 +33,42 @@
     (exit)))
 
 ; Initialize wallets
+(printf "> Initialize Wallets...\n")
 (define coin-base (wallet/make))
 (define wallet-a (wallet/make))
 (define wallet-b (wallet/make))
 
 ; Transactions
-(printf "Making genesis transaction...\n")
+(printf "> Initialize Blockchain...\n")
 (define genesis-t (transaction/make coin-base wallet-a 100 '()))
 
 ; Unspent transactions (store our genesis transaction)
 (define utxo (list (transaction-io/make 100 wallet-a)))
 
 ; Blockchain initiation
-(printf "Mining genesis block...\n")
 (define blockchain (blockchain/init genesis-t "1337cafe" utxo))
 (print-wallets blockchain wallet-a wallet-b)
 
 ; Make a second transaction
-(printf "Mining second transaction...\n")
+(printf "--> Mining first transaction...\n")
 (set! blockchain (blockchain/send-money blockchain wallet-a wallet-b 2 (utils/file->contract "contract.script")))
 (print-wallets blockchain wallet-a wallet-b)
 
 ; Make a third transaction
-(printf "Mining third transaction...\n")
+(printf "--> Mining second transaction...\n")
 (set! blockchain (blockchain/send-money blockchain wallet-b wallet-a 1 (utils/file->contract "contract.script")))
 (print-wallets blockchain wallet-a wallet-b)
 
 ; Attempt to make a fourth transaction
-(printf "Attempting to mine fourth (not-valid) transaction...\n")
+(printf "--> Attempting to mine fourth (not-valid) transaction...\n")
 (set! blockchain (blockchain/send-money blockchain wallet-b wallet-a 3 (utils/file->contract "contract.script")))
 (print-wallets blockchain wallet-a wallet-b)
 
-(printf "Blockchain is valid: ~a\n\n" (blockchain/valid? blockchain))
+(printf "--> Blockchain is valid: ~a\n\n" (blockchain/valid? blockchain))
 
 (for ([block (blockchain-blocks blockchain)])
   (print-block block)
   (newline))
 
 (utils/struct->file blockchain "blockchain.data")
-(printf "Exported blockchain to 'blockchain.data'...\n")
+(printf "--> Exported blockchain to 'blockchain.data'...\n")

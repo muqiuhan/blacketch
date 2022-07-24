@@ -37,20 +37,23 @@
           (transaction-value t)))
 
 (define (print-block bl)
-  (printf "Block information\n=================\nHash:\t~a\nHash_p:\t~a\nStamp:\t~a\nNonce:\t~a\nData:\t~a\n"
-          (block-hash bl)
-          (block-previous-hash bl)
-          (block-timestamp bl)
-          (block-nonce bl)
-          (format-transaction (block-transaction bl))))
+  (let ([block-info (format "| Hash:\t~a\n| Hash_p:\t~a\n| Timestamp:\t~a\n| Nonce:\t~a\n| Data:\t~a\n"
+                            (block-hash bl)
+                            (block-previous-hash bl)
+                            (block-timestamp bl)
+                            (block-nonce bl)
+                            (format-transaction (block-transaction bl)))])
+    (display block-info)))
 
 (define (print-blockchain b)
+  (displayln "+--------------------------------------------------------------------------------")
   (for ([block (blockchain-blocks b)])
     (print-block block)
+    (display "+--------------------------------------------------------------------------------")
     (newline)))
 
 (define (print-wallets b wallet-a wallet-b)
-  (printf "\nWallet A balance: ~a\nWallet B balance: ~a\n\n"
+  (printf "\n=> Wallet A balance: ~a\n=> Wallet B balance: ~a\n\n"
           (blockchain/balance-wallet b wallet-a)
           (blockchain/balance-wallet b wallet-b)))
 
