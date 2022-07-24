@@ -31,41 +31,38 @@
 #lang racket/base
 
 (require (only-in sha sha256))
-(require (only-in openssl/sha1 bytes->hex-string))
+(require (only-in sha bytes->hex-string))
 (require racket/serialize)
 
-;; This structure contains a hash so that we’re able to verify its validity.
-;; It also has a value, an owner, and a timestamp.
 (struct transaction-io
-  (transaction-hash value owner timestamp)
+  (hash value owner timestamp)
   #:prefab)
 
-;; Creating a hash and rely on serialization
+; Procedure for calculating the hash of a transaction-io object
 (define (transaction-io/calculate-hash value owner timestamp)
-  (bytes->hex-string
-   (sha256
-    (bytes-append
-     (string->bytes/utf-8 (number->string value))
-     (string->bytes/utf-8 (format "~a" (serialize owner)))
-     (string->bytes/utf-8  (number->string timestamp))))))
+  (bytes->hex-string (sha256 (bytes-append
+                              (string->bytes/utf-8 (number->string value))
+                              (string->bytes/utf-8 (format "~a" (serialize owner)))
+                              (string->bytes/utf-8 (number->string timestamp))))))
 
-;; transaction-io/make is a helper procedure, that will initialize timestamp as well
+; Make a transaction-io object with calculated hash
 (define (transaction-io/make value owner)
   (let ([timestamp (current-milliseconds)])
-    (transaction-io (transaction-io/calculate-hash value owner timestamp)
-                    value
-                    owner
-                    timestamp)))
+    (transaction-io
+     (transaction-io/calculate-hash value owner timestamp)
+     value
+     owner
+     timestamp)))
 
-;; Verify transaction-io, if transaction-io hash is equal to the hash of the value, owner, and the timestamp
+; A transaction-io is valid if...
 (define (transaction-io/valid? t-in)
-  (equal? (transaction-io-transaction-hash t-in)
+  ; the hash is correct
+  (equal? (transaction-io-hash t-in)
           (transaction-io/calculate-hash
            (transaction-io-value t-in)
            (transaction-io-owner t-in)
            (transaction-io-timestamp t-in))))
 
-(provide transaction-io/valid?
-         transaction-io/calculate-hash
+(provide (struct-out transaction-io)
          transaction-io/make
-         (struct-out transaction-io))
+         transaction-io/valid?)
