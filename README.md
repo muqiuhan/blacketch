@@ -1,7 +1,7 @@
 # Blacketch
 <div align=center><img width="150" height="150" src="./res/logo.png"/></div>
 
-<center> Blacketch is a simple blockchain implementation written by Racket. </center>
+<p align="center"> Blacketch is a simple blockchain implementation written by Racket. </p>
 
 # Why this project?
 I've always been curious about what people are talking about when they talk about blockchain, and when I was puzzled, it occurred to me why I didn't implement a blockchain system myself to get a deeper understanding of the field.
@@ -9,6 +9,8 @@ I've always been curious about what people are talking about when they talk abou
 __NOTE: This project is just a learning project__
 
 # How to use?
+You can specify the mining difficulty by setting the value of `difficulty` in `src/block.rkt`.
+
 - `racket main.rkt`
 - `racket main-p2p.rkt`
 
