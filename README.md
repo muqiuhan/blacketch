@@ -9,10 +9,17 @@ I've always been curious about what people are talking about when they talk abou
 __NOTE: This project is just a learning project__
 
 # How to use?
+
+- Built on Racket 8.5
+
+## Dependencies
+- crypto : `raco pkg install crypto`
+- sha : `raco pkg install sha`
+
 You can specify the mining difficulty by setting the value of `difficulty` in `src/block.rkt`.
 
-- `racket main.rkt`
-- `racket main-p2p.rkt`
+- `racket main.rkt` or `raco exe main.rkt && ./main`
+- `racket main-p2p.rkt` or `raco exe main-p2p.rkt && ./main`
 
 # Acknowledgements
 - This project was inspired by:
@@ -22,6 +29,13 @@ You can specify the mining difficulty by setting the value of `difficulty` in `s
     1. https://www.vecteezy.com/vector-art/548262-cryptocurrency-and-blockchain-icons-or-logo
 
     2. https://racket-lang.org
+
+# Others
+- PRESS.one DSL script interpreter is written in Clojure : https://github.com/Press-One/prsc
+
+- A blockchain implementation in Go, as described in these articles: https://github.com/Jeiwan/blockchain_go
+
+- Introducing Blockchain with Lisp: https://leanpub.com/ibl
 
 # License
 Copyright (c) 2022 Muqiu Han
